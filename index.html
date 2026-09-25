@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AQUA QUANT | 15,620レースの泥臭い検証から生まれた、誠実な競艇数理システム</title>
+  <meta name="description" content="競艇で勝ち続けるために必要なのは、直感でも魔法のAIでもありませんでした。1年超・15,620レースのデータと向き合い続けたエンジニアが辿り着いた、厳選4点買いの数理記録。">
+  
+  <!-- Google Fonts: 端正で美しい和文活字 & 上品なゴシック & 数字用フォント -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=JetBrains+Mono:wght@400;500;600;700&family=Shippori+Mincho:wght@500;600;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Shippori Mincho"', 'serif'],
+            sans: ['"Zen Kaku Gothic New"', '"BIZ UDPGothic"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            paper: {
+              50: '#fbfbfd',
+              100: '#f4f4f7',
+              900: '#14171f',
+              950: '#0c0e14',
+            },
+            accent: {
+              teal: '#0d9488',
+              tealLight: '#14b8a6',
+              amber: '#d97706',
+              amberLight: '#f59e0b',
+              navy: '#1e293b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      background-color: #0c0e14;
+      color: #e2e8f0;
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      letter-spacing: 0.02em;
+    }
+    .craft-border {
+      border: 1px solid rgba(226, 232, 240, 0.08);
+    }
+    .craft-border-subtle {
+      border: 1px solid rgba(226, 232, 240, 0.05);
+    }
+    .craft-card {
+      background: #14171f;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+    .serif-title {
+      font-family: 'Shippori Mincho', serif;
+      letter-spacing: 0.04em;
+    }
+    .quote-box {
+      border-left: 2px solid #0d9488;
+      background: rgba(13, 148, 136, 0.04);
+    }
+    .table-container::-webkit-scrollbar {
+      height: 5px;
+    }
+    .table-container::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body class="selection:bg-teal-900 selection:text-teal-200">
+
+  <!-- TOP NOTICE BAR: 限定性と実績 -->
+  <div class="bg-paper-900 border-b border-white/5 py-2 px-4 text-center text-xs text-slate-300">
+    <span>🔥 <strong class="text-teal-300 font-mono">厳選13,369レース完全実証</strong>：年間純利益 <strong class="text-teal-300 font-mono">+1,690,593円</strong>（回収率115.81%）を叩き出した確定記録を公開中。※オッズ保護のため<strong class="text-amber-400">【先着100名様限定】</strong>の募集となります。</span>
+  </div>
+
+  <!-- NAVIGATION -->
+  <header class="sticky top-0 z-50 bg-paper-950/90 backdrop-blur-md border-b border-white/5">
+    <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+      
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-teal-800/40 border border-teal-500/30 flex items-center justify-center text-teal-300 font-serif font-bold text-sm">
+          水
+        </div>
+        <div>
+          <div class="serif-title font-bold text-base text-slate-100 tracking-wider">AQUA QUANT</div>
+          <div class="text-[10px] text-slate-400 -mt-0.5 tracking-tight font-sans">競艇数理研究室</div>
+        </div>
+      </div>
+
+      <nav class="hidden md:flex items-center gap-8 text-xs font-medium text-slate-300">
+        <a href="#story" class="hover:text-teal-300 transition-colors">開発の手記</a>
+        <a href="#stats" class="hover:text-teal-300 transition-colors">1年の検証記録</a>
+        <a href="#rules" class="hover:text-teal-300 transition-colors">3つの設計思想</a>
+        <a href="#simulation" class="hover:text-teal-300 transition-colors">利益シミュレーション</a>
+        <a href="#pricing" class="hover:text-teal-300 transition-colors">参加プラン</a>
+        <a href="#faq" class="hover:text-teal-300 transition-colors">よくある質問</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <a href="#pricing" class="px-4 py-2 rounded-lg bg-teal-700 hover:bg-teal-600 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-1.5">
+          <i data-lucide="zap" class="w-3.5 h-3.5 fill-current"></i>
+          <span>今すぐ買い目を受け取る</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- HERO SECTION: 自然な文節改行と強烈な数字 -->
+  <section class="pt-20 pb-20 border-b border-white/5 relative">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+      
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md bg-white/5 border border-white/10 text-xs text-slate-300 mb-8 font-sans flex-wrap justify-center">
+        <span class="w-2 h-2 rounded-full bg-teal-400 animate-pulse"></span>
+        <span class="text-teal-300 font-bold font-mono whitespace-nowrap">厳選13,369レース完全実証</span>
+        <span class="text-slate-600 hidden sm:inline">|</span>
+        <span class="whitespace-nowrap">1レース800円から始めるクオンツ競艇投資</span>
+      </div>
+
+      <h1 class="serif-title text-3xl sm:text-5xl lg:text-6xl font-extrabold leading-snug sm:leading-tight text-slate-100 mb-8 [text-wrap:balance]">
+        <span class="inline-block">95%が養分になる競艇で、</span><br class="hidden sm:inline">
+        <span class="inline-block"><span class="text-teal-300">年間＋169万円の純利益</span>を叩き出した</span><br class="hidden sm:inline">
+        <span class="inline-block">「勝ち組の論理」。</span>
+      </h1>
+
+      <p class="text-base sm:text-lg text-slate-300 leading-relaxed font-sans max-w-2xl mx-auto mb-10 [text-wrap:balance]">
+        当たっても赤字になる「トリガミ」や、直前オッズの急変にいつまで泣かされますか？
+        怪しい予想屋とは次元が違う、四季を通じた13,369レースの完全実証データ。
+        地雷4場を除外し、期待値を最大化した<strong class="text-white font-bold underline decoration-teal-400 underline-offset-4">「厳選4点ハイブリッド買い」</strong>を、あなたのスマホへリアルタイム自動配信します。
+      </p>
+
+      <!-- KEY METRICS BANNER: 落ち着いた上質感と強烈な数字（枠はみ出し・文字省略を完全防止） -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 max-w-4xl mx-auto text-left mb-10">
+        
+        <div class="craft-card p-4 sm:p-5 rounded-xl border border-teal-500/20 flex flex-col justify-between">
+          <div class="text-[10px] sm:text-[11px] text-slate-400 mb-1 font-bold">通年回収率</div>
+          <div class="flex items-baseline gap-0.5">
+            <span class="text-xl sm:text-2xl lg:text-3xl font-bold font-mono text-slate-100 tracking-tight">115.81</span>
+            <span class="text-xs text-teal-400 font-sans font-normal">%</span>
+          </div>
+          <div class="text-[10px] text-teal-300 font-medium mt-2">厳選13,369レース確定値</div>
+        </div>
+
+        <div class="craft-card p-4 sm:p-5 rounded-xl border border-teal-500/40 bg-teal-950/20 flex flex-col justify-between">
+          <div class="text-[10px] sm:text-[11px] text-slate-400 mb-1 font-bold">年間純利益</div>
+          <div class="flex items-baseline gap-0.5">
+            <span class="text-base sm:text-xl lg:text-2xl font-bold font-mono text-teal-300 tracking-tighter whitespace-nowrap">+1,690,593</span>
+            <span class="text-xs text-slate-300 font-sans font-normal whitespace-nowrap">円</span>
+          </div>
+          <div class="text-[10px] text-slate-300 mt-2">1R800円(各200円)で達成</div>
+        </div>
+
+        <div class="craft-card p-4 sm:p-5 rounded-xl border border-white/5 flex flex-col justify-between">
+          <div class="text-[10px] sm:text-[11px] text-slate-400 mb-1 font-bold">通年的中率</div>
+          <div class="flex items-baseline gap-0.5">
+            <span class="text-xl sm:text-2xl lg:text-3xl font-bold font-mono text-slate-100 tracking-tight">25.50</span>
+            <span class="text-xs text-slate-400 font-sans font-normal">%</span>
+          </div>
+          <div class="text-[10px] text-slate-400 mt-2">4点買い/約4回に1回的中</div>
+        </div>
+
+        <div class="craft-card p-4 sm:p-5 rounded-xl border border-white/5 flex flex-col justify-between">
+          <div class="text-[10px] sm:text-[11px] text-slate-400 mb-1 font-bold">月間勝率</div>
+          <div class="flex items-baseline gap-0.5">
+            <span class="text-xl sm:text-2xl lg:text-3xl font-bold font-mono text-slate-100 tracking-tight">91.7</span>
+            <span class="text-xs text-teal-400 font-sans font-normal">%</span>
+          </div>
+          <div class="text-[10px] text-slate-400 mt-2">12ヶ月中 11ヶ月が黒字</div>
+        </div>
+
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+        <a href="#pricing" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-teal-700 hover:bg-teal-600 text-white text-base font-bold transition-all flex items-center justify-center gap-2 shadow-lg shadow-teal-900/40 transform hover:-translate-y-0.5">
+          <i data-lucide="zap" class="w-4 h-4 fill-current"></i>
+          <span>今すぐDiscordで買い目を受け取る</span>
+        </a>
+        <a href="#stats" class="w-full sm:w-auto px-6 py-4 rounded-xl bg-paper-900 hover:bg-slate-800 border border-white/10 text-slate-300 text-sm font-medium transition-all flex items-center justify-center gap-2">
+          <i data-lucide="bar-chart-2" class="w-4 h-4 text-teal-400"></i>
+          <span>1年間の全検証データを見る</span>
+        </a>
+      </div>
+
+      <div class="text-[11px] text-slate-400 flex items-center justify-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+        <span>オッズ保護のため先着100名様限定 / 軍資金1万円から即日スタート可能</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- DEVELOPER STORY: 人の手で丁寧に作った経緯 -->
+  <section id="story" class="py-20 border-b border-white/5">
+    <div class="max-w-3xl mx-auto px-6">
+      
+      <div class="mb-4 text-xs font-mono text-teal-400 uppercase tracking-widest">DEVELOPER'S NOTE</div>
+      <h2 class="serif-title text-2xl sm:text-3xl font-bold text-slate-100 mb-8 [text-wrap:balance]">
+        「なぜ、私たちは4点買いにたどり着いたのか」
+      </h2>
+
+      <div class="space-y-6 text-slate-300 text-sm sm:text-base leading-relaxed text-justify [text-wrap:pretty]">
+        <p>
+          はじめまして。AQUA QUANTの開発責任者です。
+          私もかつては休日に水面やテレボートとにらめっこし、展示タイムやチルト角度、選手のコメントを丹念に調べて舟券を買っていました。
+        </p>
+
+        <p>
+          しかし、どれだけ勉強してもぶち当たるのが<strong class="text-white">「トリガミ」と「オッズの壁」</strong>でした。
+          的中率を上げようと買い目を6点、10点と広げると、当たっても配当が500円や700円でトータルは赤字。
+          逆に大穴を狙うと、数十レース連続で的中せず資金が尽きてしまう。
+        </p>
+
+        <div class="quote-box p-6 rounded-r-lg my-6 text-slate-200">
+          <p class="font-serif italic text-base leading-relaxed">
+            「競艇というゲームは、的中率を競う競技ではない。的中した時の回収倍率と、不的中時の損失コストのバランスを数理的に設計しなければ、人間は構造的に負けるようにできている。」
+          </p>
+        </div>
+
+        <p>
+          この事実に気づいてから、私は機械学習エンジニアとしての知見をすべて競艇に注ぎ込みました。
+          全国24会場の気象データ、潮の満ち引き、風速、モーター2連対率、コース別の決まり手確率……。
+          何十万行ものログを収集し、過学習を徹底的に排除したウォークフォワード検証を丸1年かけて実施しました。
+        </p>
+
+        <p>
+          さらに、統計的仮説検定（有意水準 p &lt; 0.01）によって、水面特性や配当構造から構造的に回収率が低下する<strong class="text-white">「地雷4場（桐生・平和島・福岡・唐津）」を特定し、投資対象から冷徹に排除</strong>しました。
+        </p>
+
+        <p>
+          試行錯誤の末に見えてきたのは、極めてシンプルな真理でした。<br>
+          <strong class="text-teal-300">「地雷4場を除外した20場で、1号艇のAI予測勝率が65%以上のレースだけを選び、本命2点＋期待値上位2点の計4点に固定して投票する」</strong>こと。
+          これが、四季を通じた厳選13,369レースの波を乗り越え、通年回収率115.81%・年間純利益＋1,690,593円という圧倒的利益を生み出す唯一の解でした。
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 3 CORE PHILOSOPHIES: 3つの誠実な設計思想 -->
+  <section id="rules" class="py-20 border-b border-white/5 bg-paper-950/60">
+    <div class="max-w-4xl mx-auto px-6">
+      
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <div class="text-xs font-mono text-teal-400 uppercase tracking-widest mb-2">OUR 3 CORE PRINCIPLES</div>
+        <h2 class="serif-title text-2xl sm:text-3xl font-bold text-slate-100">
+          私たちが守り続けている、3つの誠実なルール
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="craft-card p-6 rounded-xl flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-mono text-teal-400 mb-3">RULE 01</div>
+            <h3 class="serif-title text-lg font-bold text-slate-100 mb-3">トリガミになる買い目は、1円も買わない</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              買い目を広げて「的中だけを楽しむ」のはやめました。確率Top2本命（各200円）＋EV上位2点（各200円）の計4点・800円に固定。当たれば確実に利益が積み上がるハイブリッド設計です。
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-white/5 text-[11px] text-teal-400">
+            ✓ 的中時回収率の平均は400%超
+          </div>
+        </div>
+
+        <div class="craft-card p-6 rounded-xl flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-mono text-teal-400 mb-3">RULE 02</div>
+            <h3 class="serif-title text-lg font-bold text-slate-100 mb-3">地雷4場と怪しいレースは、徹底排除</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              統計的にマイナス期待値の4場（桐生・平和島・福岡・唐津）を完全除外。残る20場で「1号艇の逃げ信頼度が65%以上」と判定された鉄板レースだけを厳選し、無駄な損失を物理的に遮断します。
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-white/5 text-[11px] text-teal-400">
+            ✓ 統計的仮説検定（p &lt; 0.01）で実証済み
+          </div>
+        </div>
+
+        <div class="craft-card p-6 rounded-xl flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-mono text-teal-400 mb-3">RULE 03</div>
+            <h3 class="serif-title text-lg font-bold text-slate-100 mb-3">負けた月も、すべて包み隠さず開示する</h3>
+            <p class="text-xs text-slate-300 leading-relaxed [text-wrap:pretty]">
+              「100%絶対勝てる」と謳うものは偽物です。確率の世界である以上、ドローダウンは必ず訪れます。私たちは唯一マイナスとなった月（2026年5月: -21,469円）も含め、全12ヶ月の全実績を誠実に公開しています。
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-white/5 text-[11px] text-teal-400">
+            ✓ 12ヶ月中11ヶ月が黒字（月間勝率91.7%）
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- LEVERAGE PROFIT SIMULATION: 資金に応じた利益拡大 -->
+  <section id="simulation" class="py-20 border-b border-white/5">
+    <div class="max-w-5xl mx-auto px-6">
+      
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <div class="text-xs font-mono text-teal-400 uppercase tracking-widest mb-2">PROFIT SIMULATION</div>
+        <h2 class="serif-title text-2xl sm:text-3xl font-bold text-slate-100 mb-3 [text-wrap:balance]">
+          <span class="inline-block">1レースわずか800円で年間＋169万円。</span><br class="hidden sm:inline">
+          <span class="inline-block">もし、投資ロットを増やしていたら？</span>
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-400 leading-relaxed [text-wrap:balance]">
+          当システムの数理エッジ（回収率115.81%）は、資金量に応じて等しくレバレッジが効く設計です。
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        
+        <!-- Standard 1x -->
+        <div class="craft-card p-5 rounded-xl border border-teal-500/30 bg-teal-950/20 relative">
+          <div class="text-[10px] font-mono font-bold text-teal-300 bg-teal-900/50 px-2 py-0.5 rounded inline-block mb-3 border border-teal-500/30">
+            確定実証ベース (1倍)
+          </div>
+          <div class="text-xs text-slate-400 mb-1">1レースあたり</div>
+          <div class="text-lg font-bold font-mono text-slate-100 mb-3">800円 <span class="text-[10px] font-sans text-slate-400">(各200円均等配分)</span></div>
+          <div class="pt-3 border-t border-white/5">
+            <div class="text-[11px] text-slate-400 mb-0.5">年間確定純利益</div>
+            <div class="text-2xl font-bold font-mono text-teal-300">+1,690,593<span class="text-xs font-sans text-slate-300 ml-0.5">円</span></div>
+          </div>
+          <div class="mt-3 text-[11px] text-slate-400 leading-relaxed">
+            軍資金1〜3万円から無理なく開始できる黄金スタンダード。
+          </div>
+        </div>
+
+        <!-- 2x -->
+        <div class="craft-card p-5 rounded-xl border border-white/5">
+          <div class="text-[10px] font-mono text-slate-400 bg-white/5 px-2 py-0.5 rounded inline-block mb-3">
+            2倍レバレッジ
+          </div>
+          <div class="text-xs text-slate-400 mb-1">1レースあたり</div>
+          <div class="text-lg font-bold font-mono text-slate-100 mb-3">1,600円 <span class="text-[10px] font-sans text-slate-400">(各400円配分)</span></div>
+          <div class="pt-3 border-t border-white/5">
+            <div class="text-[11px] text-slate-400 mb-0.5">年間想定純利益</div>
+            <div class="text-2xl font-bold font-mono text-slate-100">+3,381,186<span class="text-xs font-sans text-slate-300 ml-0.5">円</span></div>
+          </div>
+          <div class="mt-3 text-[11px] text-slate-400 leading-relaxed">
+            月平均で約28万円の副収入。生活水準を大きく引き上げる水準。
+          </div>
+        </div>
+
+        <!-- 5x -->
+        <div class="craft-card p-5 rounded-xl border border-white/5">
+          <div class="text-[10px] font-mono text-slate-400 bg-white/5 px-2 py-0.5 rounded inline-block mb-3">
+            5倍レバレッジ
+          </div>
+          <div class="text-xs text-slate-400 mb-1">1レースあたり</div>
+          <div class="text-lg font-bold font-mono text-slate-100 mb-3">4,000円 <span class="text-[10px] font-sans text-slate-400">(各1,000円配分)</span></div>
+          <div class="pt-3 border-t border-white/5">
+            <div class="text-[11px] text-slate-400 mb-0.5">年間想定純利益</div>
+            <div class="text-2xl font-bold font-mono text-amber-300">+8,452,965<span class="text-xs font-sans text-slate-300 ml-0.5">円</span></div>
+          </div>
+          <div class="mt-3 text-[11px] text-slate-400 leading-relaxed">
+            サラリーマンの平均年収を遥かに上回る本格クオンツ資産形成。
+          </div>
+        </div>
+
+        <!-- 10x -->
+        <div class="craft-card p-5 rounded-xl border border-white/5">
+          <div class="text-[10px] font-mono text-slate-400 bg-white/5 px-2 py-0.5 rounded inline-block mb-3">
+            10倍レバレッジ
+          </div>
+          <div class="text-xs text-slate-400 mb-1">1レースあたり</div>
+          <div class="text-lg font-bold font-mono text-slate-100 mb-3">8,000円 <span class="text-[10px] font-sans text-slate-400">(各2,000円配分)</span></div>
+          <div class="pt-3 border-t border-white/5">
+            <div class="text-[11px] text-slate-400 mb-0.5">年間想定純利益</div>
+            <div class="text-2xl font-bold font-mono text-amber-400">+16,905,930<span class="text-xs font-sans text-slate-300 ml-0.5">円</span></div>
+          </div>
+          <div class="mt-3 text-[11px] text-slate-400 leading-relaxed">
+            年間1,600万円超。専業プロ投資家クラスの圧倒的スケール。
+          </div>
+        </div>
+
+      </div>
+
+      <div class="craft-card p-4 rounded-xl text-center text-xs text-slate-400 leading-relaxed max-w-3xl mx-auto [text-wrap:balance]">
+        <span class="text-teal-300 font-bold">【健全運用のガイドライン】</span><br>
+        ※上記は2025年9月〜2026年8月の確定実績（回収率115.81%）に基づいた同一配分比率での数理試算です。最初から大金を賭ける必要は一切ありません。まずは1レース400円〜800円から小さくスタートし、数ヶ月で利益が蓄積されてから徐々にロットを上げていく堅実な運用を強く推奨します。
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 12 MONTHS VERIFICATION: 実績データと研究記録 -->
+  <section id="stats" class="py-20 border-b border-white/5">
+    <div class="max-w-5xl mx-auto px-6">
+      
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+        <div>
+          <div class="text-xs font-mono text-teal-400 uppercase tracking-widest mb-2">WALK-FORWARD AUDIT LOG</div>
+          <h2 class="serif-title text-2xl sm:text-3xl font-bold text-slate-100">丸1年（12ヶ月）・厳選13,369レースの確定検証記録</h2>
+        </div>
+        <p class="text-xs text-slate-400 mt-2 md:mt-0 max-w-sm">
+          ※2025年9月〜2026年8月までの丸1年間（確定月）の全データを改ざんなく収録。進行中の2026年9月分は確定後に月次追加されます。
+        </p>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+        
+        <!-- Profit Chart -->
+        <div class="craft-card p-5 rounded-xl">
+          <div class="flex items-center justify-between mb-4">
+            <div class="text-xs font-bold text-slate-200 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-teal-400"></span>
+              累積純利益の推移 (円)
+            </div>
+            <span class="text-xs font-mono text-teal-300 bg-teal-900/30 px-2 py-0.5 rounded border border-teal-500/20 font-bold">
+              最終: +1,690,593円
+            </span>
+          </div>
+          <div class="relative h-64 w-full">
+            <canvas id="profitChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Strategy Comparison -->
+        <div class="craft-card p-5 rounded-xl">
+          <div class="flex items-center justify-between mb-4">
+            <div class="text-xs font-bold text-slate-200 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+              通年回収率の比較 (%)
+            </div>
+            <span class="text-xs font-mono text-slate-300">
+              100%超は当システムのみ
+            </span>
+          </div>
+          <div class="relative h-64 w-full">
+            <canvas id="comparisonChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MONTHLY TABLE -->
+      <div class="craft-card rounded-xl overflow-hidden">
+        <div class="p-4 border-b border-white/5 flex items-center justify-between bg-paper-900/50">
+          <span class="text-xs font-bold text-slate-200">月別詳細パフォーマンス（丸1年・全12ヶ月確定分）</span>
+          <span class="text-[11px] text-slate-400">1レース4点・計800円基準（地雷4場除外適用）</span>
+        </div>
+
+        <div class="table-container overflow-x-auto">
+          <table class="w-full text-left text-xs whitespace-nowrap font-mono">
+            <thead class="bg-paper-950 text-[11px] text-slate-400 font-sans border-b border-white/5">
+              <tr>
+                <th class="px-5 py-3 font-normal">対象年月</th>
+                <th class="px-5 py-3 font-normal">対象レース</th>
+                <th class="px-5 py-3 font-normal">的中数</th>
+                <th class="px-5 py-3 font-normal">的中率</th>
+                <th class="px-5 py-3 font-normal">総投資額</th>
+                <th class="px-5 py-3 font-normal">総払戻金</th>
+                <th class="px-5 py-3 font-normal">月間損益</th>
+                <th class="px-5 py-3 font-normal">回収率</th>
+                <th class="px-5 py-3 font-normal">累積損益</th>
+              </tr>
+            </thead>
+            <tbody id="monthlyTableBody" class="divide-y divide-white/5 text-slate-300">
+              <!-- Rendered via JS -->
+            </tbody>
+            <tfoot class="bg-teal-950/40 text-slate-100 font-bold border-t border-teal-500/20">
+              <tr>
+                <td class="px-5 py-3 font-sans">通年合計</td>
+                <td class="px-5 py-3">13,369</td>
+                <td class="px-5 py-3">3,409</td>
+                <td class="px-5 py-3 text-teal-300">25.50%</td>
+                <td class="px-5 py-3">10,695,200円</td>
+                <td class="px-5 py-3">12,385,793円</td>
+                <td class="px-5 py-3 text-teal-300">+1,690,593円</td>
+                <td class="px-5 py-3 text-teal-300 font-extrabold">115.81%</td>
+                <td class="px-5 py-3 text-teal-300 font-extrabold">+1,690,593円</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <div class="mt-4 text-[11px] text-slate-400 leading-relaxed [text-wrap:balance]">
+        ※ 2026年5月のように回収率が一時的に100%を割り込む時期（-21,469円のドローダウン）も存在しますが、12ヶ月中11ヶ月（勝率91.7%）でプラスを達成しており、年間を通じて継続することで統計的優位性（Edge）が着実に収益をもたらします。（※進行中の2026年9月分は確定後に反映されます）
+      </div>
+
+    </div>
+
+    </div>
+  </section>
+
+    </div>
+  </section>
+
+  <!-- HOW DISCORD WORKS: 届く買い目の様子と手触り感 -->
+  <section id="community" class="py-20 border-b border-white/5 bg-paper-950/40">
+    <div class="max-w-4xl mx-auto px-6">
+      
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <div class="text-xs font-mono text-teal-400 uppercase tracking-widest mb-2">COMMUNITY & DELIVERY</div>
+        <h2 class="serif-title text-2xl sm:text-3xl font-bold text-slate-100">
+          買い目はDiscordで、締切3分前にお届けします
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-400 mt-3">
+          わずらわしいログインや専用アプリのインストールは不要。普段お使いのDiscordにそのまま届きます。
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        
+        <!-- Steps -->
+        <div class="space-y-6">
+          <div class="flex gap-4 items-start">
+            <div class="w-7 h-7 rounded bg-teal-800/50 border border-teal-500/30 text-teal-300 text-xs font-mono flex items-center justify-center flex-shrink-0 mt-0.5">
+              1
+            </div>
+            <div>
+              <div class="text-sm font-bold text-slate-200 mb-1">公式Discordサーバーに参加</div>
+              <div class="text-xs text-slate-400 leading-relaxed">
+                サイトからDiscordへ。まずは無料チャンネルで毎日の的中報告やコミュニティの雰囲気をご覧ください。
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-4 items-start">
+            <div class="w-7 h-7 rounded bg-teal-800/50 border border-teal-500/30 text-teal-300 text-xs font-mono flex items-center justify-center flex-shrink-0 mt-0.5">
+              2
+            </div>
+            <div>
+              <div class="text-sm font-bold text-slate-200 mb-1">会員登録（即座にチャンネル開放）</div>
+              <div class="text-xs text-slate-400 leading-relaxed">
+                Stripeによる安全な決済後、数秒で配信チャンネルの閲覧権限が自動で付与されます。
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-4 items-start">
+            <div class="w-7 h-7 rounded bg-teal-800/50 border border-teal-500/30 text-teal-300 text-xs font-mono flex items-center justify-center flex-shrink-0 mt-0.5">
+              3
+            </div>
+            <div>
+              <div class="text-sm font-bold text-slate-200 mb-1">締切3分前に買い目がプッシュ通知</div>
+              <div class="text-xs text-slate-400 leading-relaxed">
+                厳選条件に合致したレースのみ、具体的な買い目（4点）と推奨金額（計800円）がスマホに通知されます。
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-4 items-start">
+            <div class="w-7 h-7 rounded bg-teal-800/50 border border-teal-500/30 text-teal-300 text-xs font-mono flex items-center justify-center flex-shrink-0 mt-0.5">
+              4
+            </div>
+            <div>
+              <div class="text-sm font-bold text-slate-200 mb-1">テレボート等でそのまま投票するだけ</div>
+              <div class="text-xs text-slate-400 leading-relaxed">
+                ご自身の投票アプリに数字を入力して投票。予想に悩む時間をゼロにし、機械的に数理を味方につけます。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Discord Card Mockup (落ち着いた丁寧なUI) -->
+        <div class="craft-card p-5 rounded-xl border border-white/10 shadow-lg">
+          <div class="flex items-center justify-between pb-3 mb-4 border-b border-white/5 text-xs text-slate-400">
+            <div class="flex items-center gap-2">
+              <i data-lucide="hash" class="w-4 h-4 text-teal-400"></i>
+              <span class="font-bold text-slate-200">f1-厳選ハイブリッド配信</span>
+            </div>
+            <span class="text-[11px] text-slate-500">締切3分前配信</span>
+          </div>
+
+          <div class="bg-paper-950 p-4 rounded-lg border border-white/5 text-xs font-mono space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-teal-400 font-bold">🎯 大村 11R 投票推奨シグナル</span>
+              <span class="text-slate-500 text-[10px]">14:28:15</span>
+            </div>
+
+            <div class="text-slate-300 font-sans text-xs">
+              1号艇 逃げ信頼度: <strong class="text-teal-300 font-mono">71.4%</strong> (基準クリア)
+            </div>
+
+            <div class="p-3 rounded bg-paper-900 border border-white/5 space-y-1.5">
+              <div class="text-[11px] text-slate-400 font-sans">推奨買い目（合計4点・800円）:</div>
+              <div class="flex justify-between text-slate-200">
+                <span>本命①: <strong class="text-white">1-2-3</strong> (オッズ 8.2倍)</span>
+                <span class="text-teal-300 font-bold">200円</span>
+              </div>
+              <div class="flex justify-between text-slate-200">
+                <span>本命②: <strong class="text-white">1-2-4</strong> (オッズ 11.5倍)</span>
+                <span class="text-teal-300 font-bold">200円</span>
+              </div>
+              <div class="flex justify-between text-slate-200">
+                <span>EV上位①: <strong class="text-white">1-3-4</strong> (オッズ 16.4倍)</span>
+                <span class="text-teal-300 font-bold">200円</span>
+              </div>
+              <div class="flex justify-between text-slate-200">
+                <span>EV上位②: <strong class="text-white">1-4-2</strong> (オッズ 22.8倍)</span>
+                <span class="text-teal-300 font-bold">200円</span>
+              </div>
+            </div>
+
+            <div class="text-[10px] text-slate-400 flex items-center gap-1 font-sans">
+              <i data-lucide="info" class="w-3 h-3 text-teal-400"></i>
+              的中時リターン想定: 1,640円 〜 4,560円
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BANKROLL GUIDE: 初心者に寄り添う解説 -->
+  <section class="py-16 border-b border-white/5">
+    <div class="max-w-3xl mx-auto px-6 text-center">
+      <div class="text-xs font-mono text-teal-400 uppercase tracking-widest mb-2">BANKROLL ADVICE</div>
+      <h2 class="serif-title text-2xl font-bold text-slate-100 mb-4">元手はいくらから始めれば良いですか？</h2>
+      <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-8">
+        最初から大金を用意する必要は全くありません。1レースあたりわずか <strong class="text-white">400円〜800円</strong> で運用可能です。
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+        <div class="craft-card p-5 rounded-lg">
+          <div class="text-xs text-slate-400 mb-1">お試しスタート</div>
+          <div class="text-xl font-bold font-mono text-slate-200 mb-2">10,000円〜</div>
+          <div class="text-xs text-slate-400 leading-relaxed">
+            まずはシステムの感触を確かめたい方向け。1レース100円均等配分（計400円）から無理なく始められます。
+          </div>
+        </div>
+
+        <div class="craft-card p-5 rounded-lg border-teal-500/30">
+          <div class="text-xs text-teal-400 mb-1 font-bold">おすすめの軍資金</div>
+          <div class="text-xl font-bold font-mono text-teal-300 mb-2">30,000円〜</div>
+          <div class="text-xs text-slate-300 leading-relaxed">
+            過去1年間の最大連敗ドローダウン（29連敗・約1.1万円）を落ち着いて耐えられる安心水準です。
+          </div>
+        </div>
+
+        <div class="craft-card p-5 rounded-lg">
+          <div class="text-xs text-slate-400 mb-1">本格クオンツ運用</div>
+          <div class="text-xl font-bold font-mono text-slate-200 mb-2">100,000円〜</div>
+          <div class="text-xs text-slate-400 leading-relaxed">
+            年間純利益＋169万円の数理モデルの恩恵をフルスケールで受け取るための推奨水準です。
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING SECTION: 誠実な明朗会計 -->
+  <section id="pricing" class="py-20 border-b border-white/5">
+    <div class="max-w-4xl mx-auto px-6">
+      
+      <!-- CAPACITY LIMIT NOTICE: オッズ保護のための限定性 -->
+      <div class="craft-card p-6 rounded-2xl border border-amber-500/30 bg-amber-950/10 flex flex-col sm:flex-row items-center gap-6 mb-16">
+        <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center flex-shrink-0">
+          <i data-lucide="shield-alert" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-mono font-bold text-amber-400 bg-amber-500/20 px-2 py-0.5 rounded">重要なお知らせ</span>
+            <span class="text-xs font-bold text-slate-200">なぜ「先着100名様限定」なのか？</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed [text-wrap:pretty]">
+            当システムは直前オッズの歪み（期待値の過小評価）だけをピンポイントで狙い撃つクオンツモデルです。同じ買い目に数百人規模で大金が投票されると、オッズが急落して会員様全員の回収率が低下してしまいます。そのため、<strong class="text-white">既存会員様の利益を守るため、先着100名様に達し次第、予告なく新規募集を即座に締め切らせていただきます。</strong>
+          </p>
+        </div>
+      </div>
+
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <div class="text-xs font-mono text-teal-400 uppercase tracking-widest mb-2">MEMBERSHIP</div>
+        <h2 class="serif-title text-2xl sm:text-3xl font-bold text-slate-100 mb-3 [text-wrap:balance]">参加プランのご案内</h2>
+        <p class="text-xs sm:text-sm text-slate-400 [text-wrap:balance]">
+          高額な情報料や不透明な追加請求は一切ありません。いつでもご自身で解約いただけます。
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+        
+        <!-- Monthly -->
+        <div class="craft-card p-8 rounded-2xl flex flex-col justify-between">
+          <div>
+            <div class="text-xs font-mono text-slate-400 mb-2">MONTHLY PLAN</div>
+            <h3 class="serif-title text-xl font-bold text-slate-100 mb-2">スタンダード月額</h3>
+            <p class="text-xs text-slate-400 leading-relaxed mb-6">
+              まずは1ヶ月間、実際の配信精度を確かめたい方向けのプランです。
+            </p>
+
+            <div class="flex items-baseline gap-2 mb-6 font-mono">
+              <span class="text-4xl font-bold text-slate-100">9,800</span>
+              <span class="text-xs text-slate-400">円 / 月 (税込)</span>
+            </div>
+
+            <div class="text-xs text-slate-400 mb-6 pb-6 border-b border-white/5 font-sans">
+              1日あたり約320円（缶コーヒー約2本分）で、全国の厳選レースをリアルタイム受信。
+            </div>
+
+            <ul class="space-y-3 text-xs text-slate-300 mb-8 font-sans">
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-teal-400 flex-shrink-0"></i>
+                <span>戦略F-1 厳選4点買いのリアルタイムDiscord配信</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-teal-400 flex-shrink-0"></i>
+                <span>全国20場 365日フル監視（統計的地雷4場除外）</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-teal-400 flex-shrink-0"></i>
+                <span>月間成績アーカイブ & 集計データの閲覧</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-teal-400 flex-shrink-0"></i>
+                <span>会員専用Discordコミュニティ参加</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-teal-400 flex-shrink-0"></i>
+                <span>いつでもワンクリックで解約可能</span>
+              </li>
+            </ul>
+          </div>
+
+          <a href="#discord-link" class="w-full py-3.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-100 text-xs font-bold text-center transition-colors block">
+            月額プランで参加する
+          </a>
+        </div>
+
+        <!-- Annual -->
+        <div class="craft-card p-8 rounded-2xl border-teal-500/40 flex flex-col justify-between relative bg-paper-900">
+          <div class="absolute -top-3 right-6 px-3 py-0.5 rounded bg-teal-800 text-teal-200 text-[10px] font-bold font-sans">
+            年間 29,600円お得
+          </div>
+
+          <div>
+            <div class="text-xs font-mono text-teal-400 mb-2">ANNUAL PASS</div>
+            <h3 class="serif-title text-xl font-bold text-slate-100 mb-2">年間VIPパス</h3>
+            <p class="text-xs text-slate-400 leading-relaxed mb-6">
+              年間を通じて腰を据え、数理モデルの利益を享受する本格プランです。
+            </p>
+
+            <div class="flex items-baseline gap-2 mb-6 font-mono">
+              <span class="text-4xl font-bold text-teal-300">88,000</span>
+              <span class="text-xs text-slate-400">円 / 年 (税込)</span>
+            </div>
+
+            <div class="text-xs text-teal-300/80 mb-6 pb-6 border-b border-white/5 font-sans">
+              実質月額 約7,333円（月額プランに比べて約25%OFF）。
+            </div>
+
+            <ul class="space-y-3 text-xs text-slate-300 mb-8 font-sans">
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-teal-400 flex-shrink-0"></i>
+                <span class="text-slate-100 font-medium">スタンダードプランの全機能を1年間使い放題</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-teal-400 flex-shrink-0"></i>
+                <span>年間VIP限定チャンネルへのご案内</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-teal-400 flex-shrink-0"></i>
+                <span>新モデル・新戦略パラメータの先行アップデート</span>
+              </li>
+              <li class="flex items-center gap-2.5">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-teal-400 flex-shrink-0"></i>
+                <span>開発エンジニアへのダイレクト相談</span>
+              </li>
+            </ul>
+          </div>
+
+          <a href="#discord-link" class="w-full py-3.5 rounded-lg bg-teal-700 hover:bg-teal-600 text-white text-xs font-bold text-center transition-colors block shadow-sm">
+            年間VIPパスで申し込む
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FAQ SECTION: 丁寧なQ&A -->
+  <section id="faq" class="py-20 border-b border-white/5 bg-paper-950/40">
+    <div class="max-w-3xl mx-auto px-6">
+      
+      <div class="text-center mb-12">
+        <div class="text-xs font-mono text-teal-400 uppercase tracking-widest mb-2">FAQ</div>
+        <h2 class="serif-title text-2xl font-bold text-slate-100">よくあるご質問</h2>
+      </div>
+
+      <div class="space-y-3 text-xs sm:text-sm">
+        
+        <details class="craft-card rounded-xl p-5 group cursor-pointer">
+          <summary class="font-bold text-slate-200 flex items-center justify-between list-none">
+            <span>競艇の知識があまりない初心者でも利用できますか？</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <p class="mt-3 text-slate-400 leading-relaxed text-xs [text-wrap:pretty]">
+            はい、全く問題ありません。Discordには「大村11R 1-2-3 (200円), 1-2-4 (200円)」のように具体的な買い目と金額がそのまま届きます。テレボート等のアプリで数字を入力して投票するだけですので、専門知識やレース予想の勘は一切不要です。
+          </p>
+        </details>
+
+        <details class="craft-card rounded-xl p-5 group cursor-pointer">
+          <summary class="font-bold text-slate-200 flex items-center justify-between list-none">
+            <span>舟券の購入代行や自動投票はしてもらえますか？</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <p class="mt-3 text-slate-400 leading-relaxed text-xs [text-wrap:pretty]">
+            モーターボート競走法およびセキュリティ保護の観点から、当サービスはお客様の投票を代行することは一切いたしません。買い目の配信・情報提供のみを行い、舟券の購入はお客様ご自身のテレボート口座等で安全に行っていただきます。
+          </p>
+        </details>
+
+        <details class="craft-card rounded-xl p-5 group cursor-pointer">
+          <summary class="font-bold text-slate-200 flex items-center justify-between list-none">
+            <span>平日の日中など、全レース買えない場合はどうなりますか？</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <p class="mt-3 text-slate-400 leading-relaxed text-xs [text-wrap:pretty]">
+            各レースは独立した数理的エッジ（期待値）に基づいて抽出されているため、ご自身の都合が良い時間帯（夜のナイターレースや休日など）のレースだけを選んで投票しても期待値は変わりません。ご自身のライフスタイルに合わせて無理なく運用してください。
+          </p>
+        </details>
+
+        <details class="craft-card rounded-xl p-5 group cursor-pointer">
+          <summary class="font-bold text-slate-200 flex items-center justify-between list-none">
+            <span>解約はいつでもできますか？ 縛りなどはありますか？</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <p class="mt-3 text-slate-400 leading-relaxed text-xs [text-wrap:pretty]">
+            最低利用期間などの縛りは一切ございません。決済管理画面からいつでもワンクリックで次回更新を停止いただけます。
+          </p>
+        </details>
+
+        <details class="craft-card rounded-xl p-5 group cursor-pointer">
+          <summary class="font-bold text-slate-200 flex items-center justify-between list-none">
+            <span>100%絶対に勝てますか？</span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform"></i>
+          </summary>
+          <p class="mt-3 text-slate-400 leading-relaxed text-xs [text-wrap:pretty]">
+            公営競技において「100%絶対に勝てる」と謳うものはすべて詐欺です。当システムも月単位で見れば12ヶ月中1ヶ月はマイナス収支（ドローダウン）を経験しています。しかし、統計的優位性（Edge）を守り続けることで、厳選13,369レースで回収率115.81%・純利益+1,690,593円を達成しています。長期的な資産形成の視点で運用されることをお勧めします。
+          </p>
+        </details>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CLOSING CALL TO ACTION: 決断を迫る強力なクロージング -->
+  <section class="py-24 text-center relative overflow-hidden">
+    <div class="max-w-3xl mx-auto px-6 relative z-10">
+      
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 mb-6 font-sans">
+        <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+        <span>募集定員：先着100名様（定員到達次第、即座に受付終了）</span>
+      </div>
+
+      <h2 class="serif-title text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-100 mb-6 leading-snug [text-wrap:balance]">
+        <span class="inline-block">明日も、勘で舟券を買って</span><br class="hidden sm:inline">
+        <span class="inline-block">資金を減らし続けますか？</span>
+      </h2>
+      
+      <p class="text-sm sm:text-base text-slate-300 leading-relaxed mb-10 max-w-2xl mx-auto [text-wrap:balance]">
+        それとも、厳選13,369レースで純利益＋169万円を叩き出した数理モデルに任せて、無駄な時間をゼロにし、スマートに勝ち組へと回りますか？<br><br>
+        当たっても赤字の「トリガミ」の苦しみは、今日で終わりにしてください。
+        まずは無料Discordコミュニティで、今日の配信の精度をご自身の目で確かめてください。
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
+        <a href="#pricing" class="w-full sm:w-auto px-10 py-5 rounded-xl bg-teal-700 hover:bg-teal-600 text-white font-bold text-base transition-all shadow-xl shadow-teal-900/40 flex items-center justify-center gap-2 transform hover:-translate-y-0.5">
+          <i data-lucide="zap" class="w-5 h-5 fill-current"></i>
+          <span>今すぐ公式Discordに参加する（無料）</span>
+        </a>
+      </div>
+      
+      <div class="text-xs text-slate-400 font-sans">
+        ※ クレジットカード登録不要・いつでも退会可能 / 無料チャンネルで実績速報を毎日配信中
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER: 端正で控えめなフッター -->
+  <footer class="py-12 bg-paper-950 border-t border-white/5 text-[11px] text-slate-500 font-sans">
+    <div class="max-w-5xl mx-auto px-6">
+      
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
+        <div class="flex items-center gap-2">
+          <span class="serif-title font-bold text-slate-300">AQUA QUANT</span>
+          <span class="text-slate-600">|</span>
+          <span class="text-slate-500 text-[10px]">競艇数理研究室</span>
+        </div>
+
+        <div class="flex gap-4 text-slate-400">
+          <a href="#" class="hover:text-slate-200 transition-colors">利用規約</a>
+          <a href="#" class="hover:text-slate-200 transition-colors">特定商取引法に基づく表記</a>
+          <a href="#" class="hover:text-slate-200 transition-colors">プライバシーポリシー</a>
+          <a href="#" class="hover:text-slate-200 transition-colors">お問い合わせ</a>
+        </div>
+      </div>
+
+      <div class="border-t border-white/5 pt-6 text-[10px] leading-relaxed text-slate-600 space-y-2">
+        <p>
+          【免責事項】当サイトおよび当システムが提供する情報は、過去の出走表・オッズデータの統計的分析に基づくものであり、将来の的中や利益を保証するものではありません。舟券の購入はすべてご自身の判断と責任において行ってください。当サービスの利用により生じたいかなる損害・損失についても、運営元は一切の責任を負いかねます。
+        </p>
+        <p>
+          未成年者の舟券購入は法律で禁止されています。ギャンブル等依存症でお悩みの方は、公的相談機関等にご相談ください。
+        </p>
+        <p class="pt-2 text-slate-500">
+          &copy; 2026 AQUA QUANT Lab. All rights reserved.
+        </p>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT: DATA & CHARTS -->
+  <script>
+    lucide.createIcons();
+
+    async function initPage() {
+      let data;
+      try {
+        const res = await fetch('data.json');
+        data = await res.json();
+      } catch (e) {
+        console.error('Failed to fetch data.json', e);
+        return;
+      }
+
+      // 1. Table Render
+      const tbody = document.getElementById('monthlyTableBody');
+      tbody.innerHTML = '';
+      
+      data.monthly_data.forEach(m => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-white/[0.02] transition-colors';
+        
+        const isProfit = m.profit > 0;
+        const profitClass = isProfit ? 'text-teal-400 font-medium' : 'text-rose-400 font-medium';
+        const recoveryClass = m.recovery_rate >= 100 ? 'text-teal-400 font-bold' : 'text-slate-300';
+        
+        tr.innerHTML = `
+          <td class="px-5 py-3 font-sans text-slate-200">${m.month}</td>
+          <td class="px-5 py-3 text-slate-300">${m.races.toLocaleString()}</td>
+          <td class="px-5 py-3 text-slate-300">${m.hits.toLocaleString()}</td>
+          <td class="px-5 py-3 text-slate-300">${m.hit_rate}%</td>
+          <td class="px-5 py-3 text-slate-400">${m.bet.toLocaleString()}円</td>
+          <td class="px-5 py-3 text-slate-300">${m.payout.toLocaleString()}円</td>
+          <td class="px-5 py-3 ${profitClass}">${isProfit ? '+' : ''}${m.profit.toLocaleString()}円</td>
+          <td class="px-5 py-3 ${recoveryClass}">${m.recovery_rate}%</td>
+          <td class="px-5 py-3 font-bold ${m.cum_profit > 0 ? 'text-teal-300' : 'text-slate-400'}">+${m.cum_profit.toLocaleString()}円</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // 2. Profit Chart (控えめで上品なモノトーン＋ティール)
+      const months = data.monthly_data.map(m => m.month.replace('2025年', '25/').replace('2026年', '26/'));
+      const cumProfits = data.monthly_data.map(m => m.cum_profit);
+
+      const ctxProfit = document.getElementById('profitChart').getContext('2d');
+      new Chart(ctxProfit, {
+        type: 'line',
+        data: {
+          labels: months,
+          datasets: [{
+            label: '通年累積純利益 (円)',
+            data: cumProfits,
+            borderColor: '#0d9488', // Teal
+            backgroundColor: 'rgba(13, 148, 136, 0.08)',
+            fill: true,
+            tension: 0.25,
+            borderWidth: 2,
+            pointBackgroundColor: '#0d9488',
+            pointRadius: 3,
+            pointHoverRadius: 5,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` 累積利益: +${ctx.parsed.y.toLocaleString()} 円`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255, 255, 255, 0.03)' },
+              ticks: { color: '#64748b', font: { family: 'JetBrains Mono', size: 10 } }
+            },
+            y: {
+              grid: { color: 'rgba(255, 255, 255, 0.03)' },
+              ticks: {
+                color: '#64748b',
+                font: { family: 'JetBrains Mono', size: 10 },
+                callback: (val) => `${(val / 10000).toFixed(0)}万円`
+              }
+            }
+          }
+        }
+      });
+
+      // 3. Comparison Chart
+      const avgF1 = data.overall_recovery_rate;
+      const avgTop6 = 83.98;
+      const avgTop10 = 84.51;
+
+      const ctxComp = document.getElementById('comparisonChart').getContext('2d');
+      new Chart(ctxComp, {
+        type: 'bar',
+        data: {
+          labels: ['当システム (F-1)', 'Top6 均等買い', 'Top10 均等買い', '一般平均(控除後)'],
+          datasets: [{
+            label: '通年回収率 (%)',
+            data: [avgF1, avgTop6, avgTop10, 75.0],
+            backgroundColor: [
+              '#0d9488', // Teal
+              '#475569', // Slate
+              '#334155', // Slate dark
+              '#991b1b', // Muted Red
+            ],
+            borderRadius: 4,
+            borderWidth: 0,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` 回収率: ${ctx.parsed.y}%`
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { display: false },
+              ticks: { color: '#94a3b8', font: { family: 'Zen Kaku Gothic New', size: 11 } }
+            },
+            y: {
+              min: 50,
+              max: 120,
+              grid: { color: 'rgba(255, 255, 255, 0.03)' },
+              ticks: {
+                color: '#64748b',
+                font: { family: 'JetBrains Mono', size: 10 },
+                callback: (val) => `${val}%`
+              }
+            }
+          }
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', initPage);
+  </script>
+</body>
+</html>
